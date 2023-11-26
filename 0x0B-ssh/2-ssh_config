@@ -1,0 +1,7 @@
+# ~/.ssh/config
+
+Host your_server
+    HostName your_server_ip_or_hostname
+    User ubuntu
+    IdentityFile ~/.ssh/school
+    PasswordAuthentication no
