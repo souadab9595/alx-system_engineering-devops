@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Check if Nginx is installed
+if ! command -v nginx &> /dev/null; then
+    echo "Nginx is not installed. Please run 1-install_nginx_web_server.sh first."
+    exit 1
+fi
+
+# Create a Nginx configuration file for custom 404 page
+echo "server {
+    listen 80;
+    server_name _;
+
+    location /redirect_me {
+        return 301 http://your-new-page-url; # replace with the actual URL
+    }
+
+    error_page 404 /404_custom_page;
+
+    location = /404_custom_page {
+        internal;
+        echo 'Ceci n'est pas une page.';
+    }
+
+    location / {
+        echo 'Hello World!';
+    }
+}" | sudo tee /etc/nginx/sites-available/default
+
+# Restart Nginx (without using systemctl)
+sudo service nginx restart
+
+# Ensure Nginx is running
+if sudo lsof -Pi :80 -sTCP:LISTEN -t >/dev/null ; then
+    echo "Nginx is running."
+else
+    echo "Nginx is not running. Something went wrong."
+fi
